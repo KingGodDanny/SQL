@@ -4,6 +4,7 @@
 --매니저가 있는 직원은 몇 명입니까? 아래의 결과가 나오도록 쿼리문을 작성하세요
 select count(manager_id) as "haveMngCnt"
 from employees;
+where manager_id is not null;  --where null을 넣어주지않아도 106이 출력된다. 
 
 
 --문제2. 그룹함수 max(), min()
@@ -72,7 +73,8 @@ order by avg(salary)-min(salary) desc;
 --문제8. --문제의도파악 잘하기 = 업무별이라해서 from이 jobs가 아님!!!
 --업무(JOBS)별로 최고임금과 최저임금의 차이를 출력해보세요.
 --차이를 확인할 수 있도록 내림차순으로 정렬하세요? 
-select max(salary) - min(salary)
+select job_id,
+	   max(salary) - min(salary)
 from employees
 group by job_id
 order by max(salary)-min(salary) desc;
