@@ -186,3 +186,35 @@ select employee_id,
        ) as realSalary    
 from employees;
 
+
+
+
+/*그룹함수 Join()*/
+
+-- employees의 테이블 107개
+select *
+from employees;
+
+
+-- departments의 테이블 27개
+select *
+from departments;
+
+
+--조건이 없으면 모든 경우의 수를 출력하기때문에 107*27 =2889개의
+--값들이 출력된다.  이것은 사용자가 원하는 결과값이 아니다.
+select *
+from employees,
+     departments;
+
+
+--자기 부서아이디가 맞는 매칭결과방법
+--그러나 107개가 아닌 106개 나오는이유는 null값은 제외
+select first_name,--이름은 employees 테이블에밖에없음
+       hire_date,  --입사일도 employees 테이블에밖에없어서 변수안써줘도됌
+       department_name,
+       em.department_id, --어느 테이블의 값을 출력할것인지 적어줘야함
+       de.manager_id     --신중하게 정해서 테이블을 정해줘야함
+from employees em,
+     departments de
+where em.department_id = de.department_id;
