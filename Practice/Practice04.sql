@@ -111,3 +111,61 @@ from employees em , (select department_id,
 where em.department_id = dem.department_id
 and em.salary = dem.msal
 order by salary desc;
+
+
+--문제6.
+--각 업무(job) 별로 연봉(salary)의 총합을 구하고자 합니다. 
+--연봉 총합이 가장 높은 업무부터 업무명(job_title)과 연봉 총합을 조회하시오. (19건)
+select jo.job_title,
+       em.sums
+from jobs jo , (select sum(salary) sumS ,
+                       job_id
+                from employees
+                group by job_id) em
+where jo.job_id = em.job_id
+order by em.sums desc;
+                
+
+--문제7.
+--자신의 부서 평균 급여보다 연봉(salary)이 많은 직원의 직원번호(employee_id), 
+--이름(first_name)과 급여(salary)을 조회하세요 (38건)
+select em.employee_id 직원번호,
+       em.first_name 이름,
+       em.salary 급여
+from employees em , (select department_id,
+                            avg(salary) avgS
+                     from employees
+                     group by department_id) emA
+where em.department_id = ema.department_id
+and em.salary > ema.avgs;
+
+
+--문제8.
+--직원 입사일이 11번째에서 15번째의 직원의 사번, 이름, 급여, 입사일을 입사일 순서로 출력하세요
+select employee_id,  --제일 안쪽의 테이블
+       first_name,
+       salary,
+       hire_date
+from employees
+order by hire_date asc;
+             
+
+select rowT.rn,
+       rowT.employee_id 사번,
+       rowT.first_name 이름,
+       rowT.salary 급여,
+       rowT.hire_date 입사일
+from (select rownum rn,
+             orderT.employee_id,
+             orderT.first_name,
+             orderT.salary,
+             orderT.hire_date
+      from (select employee_id,
+                   first_name,
+                   salary,
+                   hire_date
+            from employees
+            order by hire_date asc) orderT
+            ) rowT
+where rowT.rn >= 11
+and rowT.rn <=15;
