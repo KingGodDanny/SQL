@@ -49,11 +49,11 @@ select lo.location_id 도시아이디,
        lo.country_id 나라아이디
 from (select first_name || last_name,
              department_id
-     from employees
-     where first_name = 'Steven'
-     and last_name = 'King') em,
-     departments de,
-     locations lo
+      from employees
+      where first_name = 'Steven'
+      and last_name = 'King') em,
+      departments de,
+      locations lo
 where lo.location_id = de.location_id
 and de.department_id = em.department_id;
 
@@ -94,9 +94,9 @@ select employee_id 직원번호,
        department_id 부서번호
 from employees
 where (department_id,salary) in (select department_id,
-                        max(salary)
-                 from employees
-                 group by department_id)
+                                        max(salary)
+                                 from employees
+                                 group by department_id)
 order by salary desc;
 
 /*테이블조인 사용*/
