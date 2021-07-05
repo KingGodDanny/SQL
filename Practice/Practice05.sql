@@ -182,22 +182,31 @@ and jo.job_id = em.job_id
 and rasa.rn = 1;
 
 
---문제8. ****수정하기****
+--문제8. ****수정하기****  왜 안되는지 이해불가
 --평균 급여(salary)가 가장 높은 부서는? 
-select de.department_name
-from employees em, (select  department_id,
-                            max(avg(salary)) masa
-                         
-                           from employees
-                           group by department_id ) asa ,
-     departments de
-where em.department_id = asa.department_id
-and em.salary = asa.masa
-and de.department_id = em.department_id;
+select avg(salary) avgS,
+       department_id
+       from employees
+       group by department_id;
+
+select max(avg(salary)) maxS,
+       department_id
+from (select avg(salary) MavgS,
+       department_id
+       from employees
+       group by department_id);
 
 
-select max(avg(salary))
-from employees
-group by department_id
-
+select de.department_name--대근
+from departments de, (select department_id,
+                             avg(salary) avgs
+                      from employees
+                      group by department_id) depavg, (select max(salary) msal
+                                                       from (select department_id,
+                                                                   avg(salary) mavgs                                                                   
+                                                             from employees
+                                                             group by department_id) sms
+                                                       ) bis
+where depavg.avgs = bis.msal
+and de.department_id = depavg.department_id;
                       
