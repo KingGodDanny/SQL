@@ -182,7 +182,7 @@ and jo.job_id = em.job_id
 and rasa.rn = 1;
 
 
---문제8. ****수정하기****  왜 안되는지 이해불가
+--문제8.
 --평균 급여(salary)가 가장 높은 부서는? 
 select avg(salary) avgS,
        department_id
@@ -197,16 +197,151 @@ from (select avg(salary) MavgS,
        group by department_id);
 
 
-select de.department_name--대근
+select de.department_name
 from departments de, (select department_id,
-                             avg(salary) avgs
+                             avg(salary) salary
                       from employees
-                      group by department_id) depavg, (select max(salary) msal
+                      group by department_id) ssal, (select max(salary) msal
                                                        from (select department_id,
-                                                                   avg(salary) mavgs                                                                   
+                                                                   avg(salary) salary                                                                 
                                                              from employees
                                                              group by department_id) sms
                                                        ) bis
-where depavg.avgs = bis.msal
-and de.department_id = depavg.department_id;
-                      
+where ssal.salary = bis.msal
+and de.department_id = ssal.department_id;
+
+
+--문제9.
+--평균 급여(salary)가 가장 높은 지역은? 
+--지역별로 평균급여
+select avg(salary),
+       re.region_name
+from employees em,
+     departments de,
+     locations lo,
+     countries co,
+     regions re
+where em.department_id = de.department_id
+and de.location_id = lo.location_id
+and lo.country_id = co.country_id
+and co.region_id = re.region_id
+group by region_name;
+
+--지역별로 평균급여의 최고급여
+select max(salary)
+from (select avg(salary),
+             re.region_name
+      from employees em,
+           departments de,
+           locations lo,
+           countries co,
+           regions re
+      where em.department_id = de.department_id
+      and de.location_id = lo.location_id
+      and lo.country_id = co.country_id
+      and co.region_id = re.region_id
+      group by region_name) msal;
+      
+--지역의 평균급여와 지역최고평균급여가 같다      
+select aas.rrn
+from (select avg(salary) salary,
+             region_name rrn
+      from employees em,
+           departments de,
+           locations lo,
+           countries co,
+           regions re
+      where em.department_id = de.department_id
+      and de.location_id = lo.location_id
+      and lo.country_id = co.country_id
+      and co.region_id = re.region_id
+      group by region_name) aas,
+      
+      (select max(salary) ms
+       from (select avg(salary) salary,
+                    region_name rn
+             from employees em,
+                  departments de,
+                  locations lo,
+                  countries co,
+                  regions re
+             where em.department_id = de.department_id
+             and de.location_id = lo.location_id
+             and lo.country_id = co.country_id
+             and co.region_id = re.region_id
+             group by region_name) msal
+        ) mmsal 
+where mmsal.ms = aas.salary;
+
+
+--문제10.
+--평균 급여(salary)가 가장 높은 업무는? 
+--업무명으로 그룹핑한 최대급여의 최대(?)
+select max(max_salary),
+       job_title
+from jobs
+group by job_title
+order by max(max_salary) desc;
+
+
+select rownum,
+       ms,
+       job_id
+from (select max(max_salary) ms,
+       job_title
+      from jobs
+      group by job_title
+      order by max(max_salary) desc);
+
+      
+--최대급여로 한 업무명 출력
+select jo.job_title
+from jobs jo, 
+     (select rownum rn,
+            ms,
+            job_title
+      from (select max(max_salary) ms,
+                  job_title
+           from jobs
+           group by job_title
+           order by max(max_salary) desc) oorj
+      ) orj
+where orj.job_title = jo.job_title
+and orj.rn = 1;
+
+
+--2번째 수정답안  rownum사용
+--업무아이디로 그룹핑한 평균급여 정렬부터한것
+select avg(salary) asl,
+       job_id
+from employees
+group by job_id
+order by avg(salary) desc;
+
+
+--정렬한 평균급여 rownum으로 순서매기기
+select rownum rn,
+       ass.asl,
+       job_id
+from (select avg(salary) asl,
+             job_id
+      from employees
+      group by job_id
+      order by avg(salary) desc) ass;
+
+
+--테이블 Jobs와 조인
+select jo.job_title
+from jobs jo,
+     
+     (select rownum rn,
+             ass.asl,
+             job_id
+      from (select avg(salary) asl,
+                   job_id
+            from employees
+            group by job_id
+            order by avg(salary) desc) ass
+      ) rass
+where rass.job_id = jo.job_id
+and rass.rn = 1;
