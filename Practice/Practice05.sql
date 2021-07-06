@@ -44,15 +44,33 @@ order by salary desc;
 ---매니저별 평균급여는 소수점 첫째자리에서 반올림 합니다.
 ---출력내용은 매니저아이디, 매니저이름(first_name), 매니저별평균급여, 매니저별최소급여, 
 --매니저별최대급여 입니다. (9건)
-select ,
-       avg(salary),
+
+select manager_id,
+       round(avg(salary),0),
        min(salary),
        max(salary)
 from employees
-group by manager_id;
+where hire_date >= '2005-01-01'
+group by manager_id
+having avg(salary) >= 5000
+order by avg(salary) desc;
 
-select *
-from employees emp;
+
+select salman.maid 매니저아이디,
+       em.first_name 매니저이름,
+       salman.avgsal 평균급여,
+       salman.minsal 최소급여,
+       salman.maxsal 최대급여
+from employees em, (select manager_id maid,
+                           round(avg(salary),0) avgsal,
+                           min(salary) minsal,
+                           max(salary) maxsal
+                    from employees
+                    where hire_date >= '2005-01-01'
+                    group by manager_id
+                    having avg(salary) >= 5000
+                    order by avg(salary) desc) salman
+where em.employee_id = salman.maid;
 
 
 --문제4.
